@@ -59,6 +59,11 @@ function getDateString(momento) {
     )
 }
 
+//function to delete item
+function deleteItem(dateValue) {
+    const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== Number(dateValue));
+    renderList(newArr);
+}
 
 // function to create list items as user enters and show on screen
 function createListItem({ desc, amount, moment }) {
@@ -72,7 +77,10 @@ function createListItem({ desc, amount, moment }) {
 								<span class="px-5">
 									${amount}
 								</span>
-								<button type="button" class="btn btn-outline-danger btn-sm">
+								<button 
+                                type="button" 
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="deleteItem('${moment.valueOf()}')">
 									<i class="fas fa-trash-alt"></i>
 								</button>
 							</div>
