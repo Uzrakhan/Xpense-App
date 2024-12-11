@@ -34,6 +34,9 @@ function addExpenseToTotal() {
 
     renderList(allExpenses);
     
+    //clear inputs
+    inputAmountEl.value = '';
+    inputDescEl.value = '';
 }
 
 
@@ -61,8 +64,20 @@ function getDateString(momento) {
 
 //function to delete item
 function deleteItem(dateValue) {
-    const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== Number(dateValue));
-    renderList(newArr);
+
+        // Update the allExpenses array to exclude the deleted item
+        const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== Number(dateValue));
+        allExpenses.length = 0; // Clear the original array
+        allExpenses.push(...newArr); // Push the filtered items back to the array
+    
+        // Re-render the list
+        renderList(allExpenses);
+    
+        // Update the total expense
+        const updatedTotal = newArr.reduce((acc, expense) => acc + expense.amount, 0);
+        totalExpense = updatedTotal;
+        headingEl.textContent = totalExpense;
+    
 }
 
 // function to create list items as user enters and show on screen
@@ -87,3 +102,28 @@ function createListItem({ desc, amount, moment }) {
 						</li>
     `
 }
+
+/*
+function deleteItem(dateValue) {
+    // Step 1: Filter out the item to delete.
+    // Keep only the items that don't match the date of the item we want to delete.
+    const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== Number(dateValue));
+    
+    // Step 2: Update the allExpenses array.
+    // Clear the original array and replace it with the filtered array.
+    allExpenses.length = 0; // Remove all items from the original array.
+    allExpenses.push(...newArr); // Add the filtered items back into the array.
+
+    // Step 3: Rerender the list.
+    // Show the updated list of expenses on the screen.
+    renderList(allExpenses);
+
+    // Step 4: Update the total expense.
+    // Recalculate the total by summing up the amounts of all remaining expenses.
+    const updatedTotal = newArr.reduce((acc, expense) => acc + expense.amount, 0);
+    totalExpense = updatedTotal;
+
+    // Step 5: Show the updated total on the screen.
+    headingEl.textContent = totalExpense;
+}
+*/
