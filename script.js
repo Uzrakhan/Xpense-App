@@ -49,6 +49,7 @@ function renderList(arr){
 }
 
 // function to get the current date
+/*
 function getDateString(momento) {
     return momento.toLocaleString('en-US', 
         {
@@ -58,7 +59,7 @@ function getDateString(momento) {
         }
     )
 }
-
+*/
 
 // function to create list items as user enters and show on screen
 function createListItem({ desc, amount, moment }) {
