@@ -24,6 +24,8 @@ function addExpenseToTotal() {
 
     expenseItem.desc = textDesc;
     expenseItem.amount = expense;
+    expenseItem.moment = new Date();
+
 
     allExpenses.push(expenseItem);
 
@@ -46,15 +48,25 @@ function renderList(arr){
     expenseTableEl.innerHTML = joinedAllExpenseHTML;
 }
 
+// function to get the current date
+function getDateString(momento) {
+    return momento.toLocaleString('en-US', 
+        {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        }
+    )
+}
 
 
 // function to create list items as user enters and show on screen
-function createListItem({ desc, amount }) {
+function createListItem({ desc, amount, moment }) {
     return `
             <li class="list-group-item d-flex justify-content-between">
 							<div class="d-flex flex-column">
 								${desc}
-								<small class="text-muted">March 11, 2019</small>
+								<small class="text-muted">${getDateString(moment)}</small>
 							</div>
 							<div>
 								<span class="px-5">
