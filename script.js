@@ -62,22 +62,32 @@ function getDateString(momento) {
     )
 }
 
-//function to delete item
-function deleteItem(dateValue) {
+function deleteItem(dateValue){
+    //ensure that the dateValue is a number
+    const timestamp = Number(dateValue);
 
-        // Update the allExpenses array to exclude the deleted item
-        const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== Number(dateValue));
-        allExpenses.length = 0; // Clear the original array
-        allExpenses.push(...newArr); // Push the filtered items back to the array
-    
-        // Re-render the list
-        renderList(allExpenses);
-    
-        // Update the total expense
-        const updatedTotal = newArr.reduce((acc, expense) => acc + expense.amount, 0);
-        totalExpense = updatedTotal;
+    if(isNaN(timestamp)) {
+        console.error('invalid');
+        return;
+    }
+
+    //find the expense u want to delete
+    const expenseToDelete = allExpenses.find((expense) => expense.moment.valueOf() === timestamp);
+
+    if(expenseToDelete) {
+        totalExpense -= expenseToDelete.amount;
         headingEl.textContent = totalExpense;
-    
+    }
+
+    //Create a new array of expenses that excludes the one we want to delete.
+    const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== timestamp);
+
+    // add this new array to the all expenses array 
+    allExpenses.length = 0; //empty the array
+    allExpenses.push(...newArr);
+
+    //re-render the list
+    renderList(allExpenses);
 }
 
 // function to create list items as user enters and show on screen
