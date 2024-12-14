@@ -8,7 +8,7 @@ const expenseTableEl = document.querySelector("#expenseTable");
 
 let totalExpense = 0;
 
-headingEl.textContent = totalExpense;
+headingEl.textContent = `Total: ₹ ${totalExpense}`;
 // an array to store the expenses
 const allExpenses = [];
 
@@ -30,8 +30,12 @@ function addExpenseToTotal() {
     allExpenses.push(expenseItem);
 
     totalExpense += expense;
-    headingEl.textContent = totalExpense;
+    headingEl.textContent = `Total: ₹ ${totalExpense}`;
 
+    //save to local storage
+    saveToLocalStorage();
+
+    //display the expenses
     renderList(allExpenses);
     
     //clear inputs
@@ -42,6 +46,36 @@ function addExpenseToTotal() {
 
 // add event listener to element
 element.addEventListener("click", addExpenseToTotal);
+
+
+//function to save to local storage
+function saveToLocalStorage() {
+    localStorage.setItem('expenses',JSON.stringify(allExpenses))
+};
+
+//function to load the data from storage
+function loadDataFromStorage() {
+    const savedExpenses = localStorage.getItem('expenses');
+
+    // ensure if data is saved, if it is saved, then parse and process it
+    if(savedExpenses) {
+        const parsedExpenses = JSON.parse(savedExpenses);
+
+        // 
+        parsedExpenses.forEach(expense => expense.moment = new Date(expense.moment));
+
+        allExpenses.push(...parsedExpenses);
+
+        totalExpense = allExpenses.reduce((sum, expense) => sum + expense.amount,0);
+
+        headingEl.textContent = `Total: ₹ ${totalExpense}`;
+
+        renderList(allExpenses);
+    }
+}
+
+
+
 
 // function to render the list of arrays, used both for deleted and original array
 function renderList(arr){
@@ -86,6 +120,9 @@ function deleteItem(dateValue){
     allExpenses.length = 0; //empty the array
     allExpenses.push(...newArr);
 
+    //save to local storage
+    saveToLocalStorage();
+
     //re-render the list
     renderList(allExpenses);
 }
@@ -100,7 +137,7 @@ function createListItem({ desc, amount, moment }) {
 							</div>
 							<div>
 								<span class="px-5">
-									${amount}
+									₹ ${amount}
 								</span>
 								<button 
                                 type="button" 
@@ -113,27 +150,4 @@ function createListItem({ desc, amount, moment }) {
     `
 }
 
-/*
-function deleteItem(dateValue) {
-    // Step 1: Filter out the item to delete.
-    // Keep only the items that don't match the date of the item we want to delete.
-    const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== Number(dateValue));
-    
-    // Step 2: Update the allExpenses array.
-    // Clear the original array and replace it with the filtered array.
-    allExpenses.length = 0; // Remove all items from the original array.
-    allExpenses.push(...newArr); // Add the filtered items back into the array.
-
-    // Step 3: Rerender the list.
-    // Show the updated list of expenses on the screen.
-    renderList(allExpenses);
-
-    // Step 4: Update the total expense.
-    // Recalculate the total by summing up the amounts of all remaining expenses.
-    const updatedTotal = newArr.reduce((acc, expense) => acc + expense.amount, 0);
-    totalExpense = updatedTotal;
-
-    // Step 5: Show the updated total on the screen.
-    headingEl.textContent = totalExpense;
-}
-*/
+loadDataFromStorage();
