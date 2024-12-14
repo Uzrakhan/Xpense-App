@@ -110,7 +110,7 @@ function deleteItem(dateValue){
 
     if(expenseToDelete) {
         totalExpense -= expenseToDelete.amount;
-        headingEl.textContent = totalExpense;
+        headingEl.textContent = `Total: ₹ ${totalExpense}`;
     }
 
     //Create a new array of expenses that excludes the one we want to delete.
