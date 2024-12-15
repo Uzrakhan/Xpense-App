@@ -5,7 +5,7 @@ const headingEl = document.querySelector("#heading");
 const para = document.querySelector("#para");
 const element = document.querySelector("#addExpenseBtn");
 const expenseTableEl = document.querySelector("#expenseTable");
-
+const searchBarEl = document.querySelector("#searchBar");
 let totalExpense = 0;
 
 headingEl.textContent = `Total: ₹ ${totalExpense}`;
@@ -151,3 +151,19 @@ function createListItem({ desc, amount, moment }) {
 }
 
 loadDataFromStorage();
+
+//search functionality 
+function searchBar() {
+    //converts the value from searchbar to lowercase for case in-sensitive input
+    const query = searchBarEl.value.toLowerCase();
+
+
+    const filteredExpenses = allExpenses.filter(expense => 
+        expense.desc.toLowerCase().includes(query) || //Converts the desc (description) of the expense to lowercase and checks if it contains the search query (query).
+        getDateString(expense.moment).toLowerCase().includes(query) //Converts the formatted date string of the expense to lowercase and checks if it contains the search query.
+    );
+
+    renderList(filteredExpenses);
+}
+
+searchBarEl.addEventListener("input", searchBar);
