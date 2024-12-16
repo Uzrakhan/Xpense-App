@@ -11,16 +11,43 @@
 		integrity="sha384-0pzryjIRos8mFBWMzSSZApWtPl/5++eIfzYmTgBBmXYdhvxPc+XcFEk+zJwDgWbP"
 		crossorigin="anonymous"
 		></script>
+    <style>
+        .card {
+    margin-bottom: 20px; /* Adds vertical spacing for smaller screens */
+    }
 
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <span class="navbar-brand mb-0 ms-3 h1">Xpense</span>
-        <span class="navbar-brand mb-0 h1" id="heading"></span>
     </nav>
 
     <div class="container-fluid bg-light" style="min-height: 100vh">
         <div class="container">
+            <!-- Total Income and Expense Cards -->
+            <div class="row text-center mt-4">
+                <div class="col-md-6">
+                    <div class="card bg-light border-success">
+                        <div class="card-body">
+                            <h5 class="card-title text-success">Total Income</h5>
+                            <p class="card-text text-success" id="totalIncome">+ ₹0</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="card bg-light border-danger">
+                        <div class="card-body">
+                            <h5 class="card-title text-danger">Total Expense</h5>
+                            <p class="card-text text-danger" id="totalExpense">- ₹0</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Input Section -->
             <div class="jumbotron mt-4">
                 <div class="input-group mb-3">
                     <input
@@ -48,12 +75,29 @@
                         aria-label="spent On"
                         aria-describedby="spent at"
                     />
-                    <div class="input-group-append">
+
+                </div>
+
+                <!-- Dropdown to Select Income or Expense -->
+                <div class="input-group mb-3">
+                    <select class="form-select" id="transactionType" aria-label="Transaction Type">
+                        <option value="income">Income</option>
+                        <option value="expense" selected>Expense</option>
+                    </select>
+                </div>
+
+
+                    <div class="d-grid mb-3">
                         <button class="btn btn-outline-primary" type="button" id="addExpenseBtn">Add</button>
                     </div>
-                </div>
-            </div>
 
+
+                    <div class="d-grid mb-3">
+                        <button class="btn btn-outline-danger" type="button" id="resetTotals">Reset</button>
+                    </div>
+                </div>
+
+            <!-- Search Bar -->
             <div>
                 <input type="text" id="searchBar" placeholder="Search transactions..." class="form-control mb-3" />
               </div>
@@ -62,8 +106,8 @@
             <div>
                 <ul class="list-group" id="expenseTable"></ul>
             </div>
-            
-        </div>
+
+      </div>
     </div>
 
     <p id="para"></p>

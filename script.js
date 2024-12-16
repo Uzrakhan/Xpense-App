@@ -6,13 +6,25 @@ const para = document.querySelector("#para");
 const element = document.querySelector("#addExpenseBtn");
 const expenseTableEl = document.querySelector("#expenseTable");
 const searchBarEl = document.querySelector("#searchBar");
+const transactionTypeEl = document.querySelector("#transactionType");
+const resetBtn = document.querySelector("#resetTotals");
+const totalIncomeEl = document.querySelector("#totalIncome");
+const totalExpenseEl = document.querySelector("#totalExpense");
+
+
+let totalIncome = 0;
 let totalExpense = 0;
 
-headingEl.textContent = `Total: ₹ ${totalExpense}`;
 // an array to store the expenses
-const allExpenses = [];
+let allTransactions = [];
 
+function updateHeader(){
+    totalIncomeEl.textContent = `+₹${totalIncome}`;
+    totalExpenseEl.textContent = `-₹${totalExpense}`;
+
+}
 //function to add all the expenses as we enter them in the inputs
+/*
 function addExpenseToTotal() {
     const expenseItem = {};
 
@@ -42,47 +54,82 @@ function addExpenseToTotal() {
     inputAmountEl.value = '';
     inputDescEl.value = '';
 }
+*/
+
+function addTransaction() {
+    const amount = parseInt(inputAmountEl.value);
+
+    const desc = inputDescEl.value;
+
+    const type = transactionTypeEl.value;
+
+    const transaction = {
+        desc,
+        amount,
+        type,
+        moment : new Date()
+    };
+
+    if(isNaN(amount) || desc.value === ''){
+        alert("Enter valid")
+    }
+
+    if(type === 'income'){
+        totalIncome += amount;
+    }else{
+        totalExpense += amount;
+    }
+
+    allTransactions.push(transaction);
+    saveToLocalStorage();
+    updateHeader();
+    renderList(allTransactions);
+
+    inputAmountEl.value = '';
+    inputDescEl.value = '';
+}
+
 
 
 // add event listener to element
-element.addEventListener("click", addExpenseToTotal);
+element.addEventListener("click", addTransaction);
 
 
 //function to save to local storage
 function saveToLocalStorage() {
-    localStorage.setItem('expenses',JSON.stringify(allExpenses))
+    localStorage.setItem('transactions',JSON.stringify(allTransactions))
 };
 
 //function to load the data from storage
-function loadDataFromStorage() {
-    const savedExpenses = localStorage.getItem('expenses');
+function loadDataFromStorage(){
+    const savedTransactions = localStorage.getItem('transactions');
 
-    // ensure if data is saved, if it is saved, then parse and process it
-    if(savedExpenses) {
-        const parsedExpenses = JSON.parse(savedExpenses);
+    if(savedData) {
+        allTransactions = JSON.parse(savedTransactions);
+        totalIncome = 0;
+        totalExpense = 0;
 
-        // 
-        parsedExpenses.forEach(expense => expense.moment = new Date(expense.moment));
+        allTransactions.forEach(transaction => {
+            if(type === 'income'){
+                totalIncome += transaction.amount;
+            }else{
+                totalExpense += transaction.amount;
+            }
+        });
 
-        allExpenses.push(...parsedExpenses);
-
-        totalExpense = allExpenses.reduce((sum, expense) => sum + expense.amount,0);
-
-        headingEl.textContent = `Total: ₹ ${totalExpense}`;
-
-        renderList(allExpenses);
+        updateHeader()
+        renderList(allTransactions)
     }
 }
 
 
 
-
 // function to render the list of arrays, used both for deleted and original array
-function renderList(arr){
-    const allExpenseHTML = arr.map(expense => createListItem(expense));
-    const joinedAllExpenseHTML = allExpenseHTML.join("");
+function renderList(transactions){
+    const listHTML = transactions.map(transaction => createListItem(transaction));
+    const joinedListHTML = listHTML.join("");
     //update the ui
-    expenseTableEl.innerHTML = joinedAllExpenseHTML;
+    expenseTableEl.innerHTML = joinedListHTML;
 }
 
 // function to get the current date
@@ -128,7 +175,8 @@ function deleteItem(dateValue){
 }
 
 // function to create list items as user enters and show on screen
-function createListItem({ desc, amount, moment }) {
+function createListItem({ desc, amount, moment,type }) {
+    const amountClass = type === 'income' ? 'text-success' : 'text-danger';
     return `
             <li class="list-group-item d-flex justify-content-between">
 							<div class="d-flex flex-column">
@@ -136,8 +184,8 @@ function createListItem({ desc, amount, moment }) {
 								<small class="text-muted">${getDateString(moment)}</small>
 							</div>
 							<div>
-								<span class="px-5">
-									₹ ${amount}
+								<span class="px-5 ${amountClass}">
+									₹${amount}
 								</span>
 								<button 
                                 type="button" 
