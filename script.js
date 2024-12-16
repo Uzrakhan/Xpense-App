@@ -127,35 +127,28 @@ function getDateString(momento) {
     )
 }
 
-function deleteItem(dateValue){
+function deleteTransaction(timestamp){
     //ensure that the dateValue is a number
-    const timestamp = Number(dateValue);
+    const momentValue = Number(timestamp);
 
-    if(isNaN(timestamp)) {
-        console.error('invalid');
-        return;
+    const transactionIndex = allTransactions.findIndex(
+        (t) => t.type.moment = momentValue
+    );
+    if(transactionIndex !== -1) {
+        const transaction = allTransactions[transactionIndex];
+
+        if(transaction.type === 'income') {
+            totalIncome -= transaction.amount
+        } else{
+            totalExpense -= transaction.amount;
+        }
+
+        allTransactions.splice(transactionIndex,1);
+        saveToLocalStorage();
+        updateHeader();
+        renderList(allTransactions)
     }
 
-    //find the expense u want to delete
-    const expenseToDelete = allExpenses.find((expense) => expense.moment.valueOf() === timestamp);
-
-    if(expenseToDelete) {
-        totalExpense -= expenseToDelete.amount;
-        headingEl.textContent = `Total: ₹ ${totalExpense}`;
-    }
-
-    //Create a new array of expenses that excludes the one we want to delete.
-    const newArr = allExpenses.filter((expense) => expense.moment.valueOf() !== timestamp);
-
-    // add this new array to the all expenses array 
-    allExpenses.length = 0; //empty the array
-    allExpenses.push(...newArr);
-
-    //save to local storage
-    saveToLocalStorage();
-
-    //re-render the list
-    renderList(allExpenses);
 }
 
 // function to create list items as user enters and show on screen
@@ -174,7 +167,7 @@ function createListItem({ desc, amount, moment,type }) {
 								<button 
                                 type="button" 
                                 class="btn btn-outline-danger btn-sm"
-                                onclick="delete('${moment.valueOf()}')">
+                                onclick="deleteTransaction('${moment.valueOf()}')">
 									<i class="fas fa-trash-alt"></i>
 								</button>
 							</div>
