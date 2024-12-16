@@ -127,12 +127,13 @@ function getDateString(momento) {
     )
 }
 
+/*
 function deleteTransaction(timestamp){
     //ensure that the dateValue is a number
     const momentValue = Number(timestamp);
 
     const transactionIndex = allTransactions.findIndex(
-        (t) => t.type.moment = momentValue
+        (t) => t.moment.valueOf() === momentValue
     );
     if(transactionIndex !== -1) {
         const transaction = allTransactions[transactionIndex];
@@ -143,12 +144,50 @@ function deleteTransaction(timestamp){
             totalExpense -= transaction.amount;
         }
 
-        allTransactions.splice(transactionIndex,1);
+        allTransactions.splice(transactionIndex, 1);
         saveToLocalStorage();
         updateHeader();
         renderList(allTransactions)
     }
 
+}
+*/
+
+function deleteTransaction(timestamp) {
+    // Convert the timestamp to a number for matching
+    const momentValue = Number(timestamp);
+
+    // Find the index of the transaction with the matching timestamp
+    const transactionIndex = allTransactions.findIndex(
+        (transaction) => transaction.moment.valueOf() === momentValue
+    );
+
+    // If the transaction exists, proceed to delete
+    if (transactionIndex !== -1) {
+        // Get the transaction details
+        const transaction = allTransactions[transactionIndex];
+
+        // Deduct the amount from the respective total based on transaction type
+        if (transaction.type === 'income') {
+            totalIncome -= transaction.amount;
+        } else if (transaction.type === 'expense') {
+            totalExpense -= transaction.amount;
+        }
+
+        // Remove the transaction from the array
+        allTransactions.splice(transactionIndex, 1);
+
+        // Save updated transactions to local storage
+        saveToLocalStorage();
+
+        // Update the totals displayed in the header
+        updateHeader();
+
+        // Re-render the transaction list
+        renderList(allTransactions);
+    } else {
+        console.error(`Transaction with timestamp ${momentValue} not found.`);
+    }
 }
 
 // function to create list items as user enters and show on screen
