@@ -21,40 +21,7 @@ let allTransactions = [];
 function updateHeader(){
     totalIncomeEl.textContent = `+₹${totalIncome}`;
     totalExpenseEl.textContent = `-₹${totalExpense}`;
-
 }
-//function to add all the expenses as we enter them in the inputs
-/*
-function addExpenseToTotal() {
-    const expenseItem = {};
-
-    const textAmount = inputAmountEl.value;
-
-    const textDesc = inputDescEl.value;
-
-    const expense = parseInt(textAmount, 10);
-
-    expenseItem.desc = textDesc;
-    expenseItem.amount = expense;
-    expenseItem.moment = new Date();
-
-
-    allExpenses.push(expenseItem);
-
-    totalExpense += expense;
-    headingEl.textContent = `Total: ₹ ${totalExpense}`;
-
-    //save to local storage
-    saveToLocalStorage();
-
-    //display the expenses
-    renderList(allExpenses);
-    
-    //clear inputs
-    inputAmountEl.value = '';
-    inputDescEl.value = '';
-}
-*/
 
 function addTransaction() {
     const amount = parseInt(inputAmountEl.value);
@@ -89,10 +56,24 @@ function addTransaction() {
     inputDescEl.value = '';
 }
 
+function resetTotals() {
+    totalIncome = 0;
+    totalExpense = 0;
+
+    totalIncomeEl.textContent = `+₹ 0`;
+    totalExpenseEl.textContent = `-₹ 0`;
+
+    allTransactions = [];
+
+    saveToLocalStorage();
+    renderList(allTransactions);
+
+}
 
 
 // add event listener to element
 element.addEventListener("click", addTransaction);
+resetBtn.addEventListener("click", resetTotals);
 
 
 //function to save to local storage
@@ -104,24 +85,27 @@ function saveToLocalStorage() {
 function loadDataFromStorage(){
     const savedTransactions = localStorage.getItem('transactions');
 
-    if(savedData) {
-        allTransactions = JSON.parse(savedTransactions);
+    if(savedTransactions) {
+        allTransactions = JSON.parse(savedTransactions).map(transaction => ({
+            ...transaction,
+            moment : new Date(transaction.moment)
+        }))
+    }
+
         totalIncome = 0;
         totalExpense = 0;
 
         allTransactions.forEach(transaction => {
-            if(type === 'income'){
+            if(transaction.type === 'income'){
                 totalIncome += transaction.amount;
             }else{
                 totalExpense += transaction.amount;
             }
         });
 
-        updateHeader()
-        renderList(allTransactions)
+        updateHeader();
+        renderList(allTransactions);
     }
-}
-
 
 
 // function to render the list of arrays, used both for deleted and original array
@@ -190,7 +174,7 @@ function createListItem({ desc, amount, moment,type }) {
 								<button 
                                 type="button" 
                                 class="btn btn-outline-danger btn-sm"
-                                onclick="deleteItem('${moment.valueOf()}')">
+                                onclick="delete('${moment.valueOf()}')">
 									<i class="fas fa-trash-alt"></i>
 								</button>
 							</div>
@@ -215,3 +199,4 @@ function searchBar() {
 }
 
 searchBarEl.addEventListener("input", searchBar);
+
