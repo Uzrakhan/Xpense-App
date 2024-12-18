@@ -10,7 +10,7 @@ const transactionTypeEl = document.querySelector("#transactionType");
 const resetBtn = document.querySelector("#resetTotals");
 const totalIncomeEl = document.querySelector("#totalIncome");
 const totalExpenseEl = document.querySelector("#totalExpense");
-
+const filterTypeEl = document.querySelector("#filterType");
 
 let totalIncome = 0;
 let totalExpense = 0;
@@ -232,3 +232,20 @@ function searchBar() {
 
 searchBarEl.addEventListener("input", searchBar);
 
+function filterTransactionByType() {
+    const selectedType = filterTypeEl.value;
+
+    let filteredTransactions;
+
+    if(selectedType === 'all') {
+        filteredTransactions = allTransactions;
+    } else{
+        filteredTransactions = allTransactions.filter(transaction => transaction.type === selectedType);
+    }
+
+    renderList(filteredTransactions)
+}
+
+filterTypeEl.addEventListener("change", filterTransactionByType);
+
+filterTransactionByType();

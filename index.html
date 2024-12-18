@@ -100,8 +100,16 @@
             <!-- Search Bar -->
             <div>
                 <input type="text" id="searchBar" placeholder="Search transactions..." class="form-control mb-3" />
-              </div>
+            </div>
             
+            <div class="mb-3">
+                <label for="filterType" class="form-label">Filter by Type:</label>
+                <select id="filterType">
+                    <option value="all">All</option>
+                    <option value="income">Income</option>
+                    <option value="expense">Expense</option>
+                </select>
+            </div>
             
             <div>
                 <ul class="list-group" id="expenseTable"></ul>
