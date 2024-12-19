@@ -11,6 +11,10 @@ const resetBtn = document.querySelector("#resetTotals");
 const totalIncomeEl = document.querySelector("#totalIncome");
 const totalExpenseEl = document.querySelector("#totalExpense");
 const filterTypeEl = document.querySelector("#filterType");
+const startDateInput = document.querySelector("#startDate");
+const endDateInput = document.querySelector("#endDate");
+const filterDateBtn = document.querySelector("#filterDateBtn");
+
 
 let totalIncome = 0;
 let totalExpense = 0;
@@ -37,8 +41,8 @@ function addTransaction() {
         moment : new Date()
     };
 
-    if(isNaN(amount) || desc.value === ''){
-        alert("Enter valid")
+    if(isNaN(amount) || desc === ''){
+        alert("Enter valid amount and description.")
     }
 
     if(type === 'income'){
@@ -127,31 +131,6 @@ function getDateString(momento) {
     )
 }
 
-/*
-function deleteTransaction(timestamp){
-    //ensure that the dateValue is a number
-    const momentValue = Number(timestamp);
-
-    const transactionIndex = allTransactions.findIndex(
-        (t) => t.moment.valueOf() === momentValue
-    );
-    if(transactionIndex !== -1) {
-        const transaction = allTransactions[transactionIndex];
-
-        if(transaction.type === 'income') {
-            totalIncome -= transaction.amount
-        } else{
-            totalExpense -= transaction.amount;
-        }
-
-        allTransactions.splice(transactionIndex, 1);
-        saveToLocalStorage();
-        updateHeader();
-        renderList(allTransactions)
-    }
-
-}
-*/
 
 function deleteTransaction(timestamp) {
     // Convert the timestamp to a number for matching
@@ -249,3 +228,26 @@ function filterTransactionByType() {
 filterTypeEl.addEventListener("change", filterTransactionByType);
 
 filterTransactionByType();
+
+function filterByDate() {
+    const startDate = new Date(startDateInput.value);
+
+    const endDate = new Date(endDateInput.value);
+
+    if(isNaN(startDate) || isNaN(endDate)) {
+        alert("Please enter valid date range.");
+        return;
+    }
+
+    const filteredTransactions = allTransactions.filter(transaction => {
+        const transactionDate = transaction.moment;
+        return transactionDate >= startDate && transactionDate <= endDate
+    });
+
+    renderList(filteredTransactions)
+}
+
+filterDateBtn.addEventListener("click", filterByDate);
+filterByDate();
+
+loadDataFromStorage();

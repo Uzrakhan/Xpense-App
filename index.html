@@ -14,19 +14,60 @@
     <style>
         .card {
     margin-bottom: 20px; /* Adds vertical spacing for smaller screens */
-    }
+      }
 
+      body {
+            color: #f8f9fa; /* Light text for dark background */
+        }
+
+        .form-control, .form-select, #filterDateWrapper input {
+            background-color: #2d2d2d;
+            color: #f8f9fa;
+            border: 1px solid #6c757d;
+        }
+
+        .form-control:focus, .form-select:focus, #filterDateWrapper input:focus {
+            background-color: #2d2d2d;
+            color: #f8f9fa;
+            border: 1px solid #007bff; /* Highlighted border */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .input-group-text {
+            background-color: #495057;
+            color: #f8f9fa;
+        }
+
+        button {
+            transition: 0.3s ease;
+        }
+
+        button:hover {
+            opacity: 0.8;
+        }
+
+        #filterDateWrapper label {
+            margin-right: 10px;
+        }
+
+        #expenseTable {
+           margin-top: 20px;
+           border: 2px solid black; /* Optional border for the list */
+           border-radius: 5px;
+           gap: 1px
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark">
         <span class="navbar-brand mb-0 ms-3 h1">Xpense</span>
+        <span class="navbar-brand mb-0 h1" id="heading"></span>
     </nav>
 
-    <div class="container-fluid bg-light" style="min-height: 100vh">
+    <div class="container-fluid bg-dark" style="min-height: 100vh">
         <div class="container">
             <!-- Total Income and Expense Cards -->
-            <div class="row text-center mt-4">
+            <div class="row text-center">
                 <div class="col-md-6">
                     <div class="card bg-light border-success">
                         <div class="card-body">
@@ -44,7 +85,7 @@
                         </div>
                     </div>
                 </div>
-
+                
             </div>
 
             <!-- Input Section -->
@@ -52,14 +93,15 @@
                 <div class="input-group mb-3">
                     <input
                         type="text"
-                        class="form-control"
+                        class="form-control text-dark bg-light"
                         id="inputAmount"
                         placeholder="Amount spent"
                         aria-label="Amount spent"
                         aria-describedby="spent in rupee"
+                    
                     />
                     <div class="input-group-append">
-                        <span class="input-group-text" id="spent in rupee">₹</span>
+                        <span class="input-group-text" id="spent in rupee" >₹</span>
                     </div>
                 </div>
 
@@ -69,7 +111,7 @@
                     </div>
                     <input
                         type="text"
-                        class="form-control"
+                        class="form-control text-dark bg-light"
                         id="inputDesc"
                         placeholder="spent On"
                         aria-label="spent On"
@@ -87,38 +129,47 @@
                 </div>
 
 
-                    <div class="d-grid mb-3">
-                        <button class="btn btn-outline-primary" type="button" id="addExpenseBtn">Add</button>
-                    </div>
+                 <div class="d-grid mb-3">
+                    <button class="btn btn-outline-primary" type="button" id="addExpenseBtn">Add</button>
+                  </div>
 
-
-                    <div class="d-grid mb-3">
-                        <button class="btn btn-outline-danger" type="button" id="resetTotals">Reset</button>
-                    </div>
+                  <div class="d-grid mb-3">
+                    <button class="btn btn-outline-danger" type="button" id="resetTotals">Reset</button>
+                  </div>
                 </div>
 
             <!-- Search Bar -->
             <div>
                 <input type="text" id="searchBar" placeholder="Search transactions..." class="form-control mb-3" />
-            </div>
+              </div>
             
-            <div class="mb-3">
-                <label for="filterType" class="form-label">Filter by Type:</label>
+              <div class="mb-3">
+                <label for="filterType" class="form-label" aria-label="Transaction Type">Filter By Type:</label>
                 <select id="filterType">
-                    <option value="all">All</option>
+                    <option value="all" selected>All</option>
+                    <option value="search">Search</option>
                     <option value="income">Income</option>
                     <option value="expense">Expense</option>
                 </select>
-            </div>
+              </div>
             
+              <div class="mb-3" id="filterDateWrapper">
+                <label for="startDate">Start Date:</label>
+                    <input type="date" id="startDate">
+                    <label for="endDate">End Date:</label>
+                    <input type="date" id="endDate">
+                    <button id="filterDateBtn">Filter by Date</button>
+              </div>
+
+
             <div>
-                <ul class="list-group" id="expenseTable"></ul>
+                <ul class="list-group mb-3" id="expenseTable"></ul>
             </div>
 
-      </div>
+       </div>
     </div>
 
-    <p id="para"></p>
+    <!--<p id="para"></p>-->
     <script src="script.js"></script>
 </body>
 </html>
