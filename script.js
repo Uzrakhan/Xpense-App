@@ -27,6 +27,96 @@ function updateHeader(){
     totalExpenseEl.textContent = `-₹${totalExpense}`;
 }
 
+let expenseBreakdownChart;
+
+function renderExpenseBreakdownChart() {
+    const expenseCategories = {};
+    allTransactions.forEach((transaction) => {
+        if(transaction.type === 'expense') {
+            if(!expenseCategories[transaction.desc]) {
+                expenseCategories[transaction.desc] = 0;
+            }
+            expenseCategories[transaction.desc] += transaction.amount;
+        }
+    });
+
+    const labels = Object.keys(expenseCategories);
+    const data = Object.values(expenseCategories);
+
+    if(expenseBreakdownChart) {
+        expenseBreakdownChart.destroy();
+    }
+
+    const ctx = document.getElementById('expenseBreakdownChart').getContext('2d');
+
+    expenseBreakdownChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    data: data,
+                    backgroundColor: [
+                        '#ff6384',
+                        '#36a2eb',
+                        '#ffcd56',
+                        '#4bc0c0',
+                        '#9966ff',
+                    ],
+                },
+            ],
+        },
+        options: {
+            responsive: false,
+            plugins : {
+                legend: {
+                    position: 'top'
+                },
+            },
+        },
+    });
+}
+
+let incomeVsExpenseChart;
+
+function renderIncomeVsExpenseChart() {
+    const incomeAmount = allTransactions
+        .filter((t) => t.type === 'income')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    const expenseAmount = allTransactions
+        .filter((t) => t.type === 'expense')
+        .reduce((sum, t) => sum + t.amount, 0);
+
+    if (incomeVsExpenseChart) {
+        incomeVsExpenseChart.destroy();
+    }
+
+    const ctx = document.getElementById('incomeVsExpenseChart').getContext('2d');
+    incomeVsExpenseChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Income', 'Expense'],
+            datasets: [
+                {
+                    label: 'Amount',
+                    data: [incomeAmount, expenseAmount],
+                    backgroundColor: ['#36a2eb', '#ff6384'],
+                },
+            ],
+        },
+        options: {
+            responsive: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                },
+            },
+        },
+    });
+}
+
+
 function addTransaction() {
     const amount = parseInt(inputAmountEl.value);
 
@@ -56,6 +146,10 @@ function addTransaction() {
     updateHeader();
     renderList(allTransactions);
 
+        // Update Charts
+        renderExpenseBreakdownChart();
+        renderIncomeVsExpenseChart();
+    
     inputAmountEl.value = '';
     inputDescEl.value = '';
 }
@@ -109,6 +203,11 @@ function loadDataFromStorage(){
 
         updateHeader();
         renderList(allTransactions);
+
+            // Update Charts
+    renderExpenseBreakdownChart();
+    renderIncomeVsExpenseChart();
+
     }
 
 
@@ -251,3 +350,5 @@ filterDateBtn.addEventListener("click", filterByDate);
 filterByDate();
 
 loadDataFromStorage();
+
+
