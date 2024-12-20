@@ -15,7 +15,6 @@ const startDateInput = document.querySelector("#startDate");
 const endDateInput = document.querySelector("#endDate");
 const filterDateBtn = document.querySelector("#filterDateBtn");
 
-
 let totalIncome = 0;
 let totalExpense = 0;
 
@@ -30,6 +29,17 @@ function updateHeader(){
 let expenseBreakdownChart;
 
 function renderExpenseBreakdownChart() {
+    // Check if there are any transactions before rendering
+    if (allTransactions.length === 0) {
+        if (expenseBreakdownChart) {
+            expenseBreakdownChart.destroy();
+            expenseBreakdownChart = null;
+        }
+        return; // If no transactions, then don't render the chart
+    }
+    const heading1 = document.createElement("h3");
+    heading1.textContent = "Expense Breakdown";
+
     const expenseCategories = {};
     allTransactions.forEach((transaction) => {
         if(transaction.type === 'expense') {
@@ -80,6 +90,14 @@ function renderExpenseBreakdownChart() {
 let incomeVsExpenseChart;
 
 function renderIncomeVsExpenseChart() {
+    if (allTransactions.length === 0) {
+        if (incomeVsExpenseChart) {
+            incomeVsExpenseChart.destroy();
+            incomeVsExpenseChart = null;
+        }
+        return;
+    }
+
     const incomeAmount = allTransactions
         .filter((t) => t.type === 'income')
         .reduce((sum, t) => sum + t.amount, 0);
@@ -116,28 +134,26 @@ function renderIncomeVsExpenseChart() {
     });
 }
 
-
 function addTransaction() {
     const amount = parseInt(inputAmountEl.value);
-
     const desc = inputDescEl.value;
-
     const type = transactionTypeEl.value;
 
     const transaction = {
         desc,
         amount,
         type,
-        moment : new Date()
+        moment: new Date()
     };
 
-    if(isNaN(amount) || desc === ''){
-        alert("Enter valid amount and description.")
+    if (isNaN(amount) || desc === '') {
+        alert("Enter valid amount and description.");
+        return;
     }
 
-    if(type === 'income'){
+    if (type === 'income') {
         totalIncome += amount;
-    }else{
+    } else {
         totalExpense += amount;
     }
 
@@ -146,10 +162,19 @@ function addTransaction() {
     updateHeader();
     renderList(allTransactions);
 
-        // Update Charts
-        renderExpenseBreakdownChart();
-        renderIncomeVsExpenseChart();
-    
+    // Log current values to debug
+    console.log("Total Income:", totalIncome);
+    console.log("Total Expense:", totalExpense);
+
+    // Update Charts
+    renderExpenseBreakdownChart();
+    renderIncomeVsExpenseChart();
+
+    // Check if total income is now greater than or equal to total expense
+    if (totalIncome <= totalExpense && type === 'expense') {
+        alert("Your expense is now greater than your income!");
+    }
+
     inputAmountEl.value = '';
     inputDescEl.value = '';
 }
@@ -158,21 +183,28 @@ function resetTotals() {
     totalIncome = 0;
     totalExpense = 0;
 
-    totalIncomeEl.textContent = `+₹ 0`;
-    totalExpenseEl.textContent = `-₹ 0`;
+    totalIncomeEl.textContent = `+₹0`;
+    totalExpenseEl.textContent = `-₹0`;
 
     allTransactions = [];
 
     saveToLocalStorage();
     renderList(allTransactions);
 
+    // Destroy charts if they exist
+    if (expenseBreakdownChart) {
+        expenseBreakdownChart.destroy();
+        expenseBreakdownChart = null;
+    }
+    if (incomeVsExpenseChart) {
+        incomeVsExpenseChart.destroy();
+        incomeVsExpenseChart = null;
+    }
 }
-
 
 // add event listener to element
 element.addEventListener("click", addTransaction);
 resetBtn.addEventListener("click", resetTotals);
-
 
 //function to save to local storage
 function saveToLocalStorage() {
@@ -190,26 +222,24 @@ function loadDataFromStorage(){
         }))
     }
 
-        totalIncome = 0;
-        totalExpense = 0;
+    totalIncome = 0;
+    totalExpense = 0;
 
-        allTransactions.forEach(transaction => {
-            if(transaction.type === 'income'){
-                totalIncome += transaction.amount;
-            }else{
-                totalExpense += transaction.amount;
-            }
-        });
+    allTransactions.forEach(transaction => {
+        if(transaction.type === 'income'){
+            totalIncome += transaction.amount;
+        }else{
+            totalExpense += transaction.amount;
+        }
+    });
 
-        updateHeader();
-        renderList(allTransactions);
+    updateHeader();
+    renderList(allTransactions);
 
-            // Update Charts
+    // Update Charts
     renderExpenseBreakdownChart();
     renderIncomeVsExpenseChart();
-
-    }
-
+}
 
 // function to render the list of arrays, used both for deleted and original array
 function renderList(transactions){
@@ -229,7 +259,6 @@ function getDateString(momento) {
         }
     )
 }
-
 
 function deleteTransaction(timestamp) {
     // Convert the timestamp to a number for matching
@@ -273,22 +302,22 @@ function createListItem({ desc, amount, moment,type }) {
     const amountClass = type === 'income' ? 'text-success' : 'text-danger';
     return `
             <li class="list-group-item d-flex justify-content-between">
-							<div class="d-flex flex-column">
-								${desc}
-								<small class="text-muted">${getDateString(moment)}</small>
-							</div>
-							<div>
-								<span class="px-5 ${amountClass}">
-									₹${amount}
-								</span>
-								<button 
+                            <div class="d-flex flex-column">
+                                ${desc}
+                                <small class="text-muted">${getDateString(moment)}</small>
+                            </div>
+                            <div>
+                                <span class="px-5 ${amountClass}">
+                                    ₹${amount}
+                                </span>
+                                <button 
                                 type="button" 
                                 class="btn btn-outline-danger btn-sm"
                                 onclick="deleteTransaction('${moment.valueOf()}')">
-									<i class="fas fa-trash-alt"></i>
-								</button>
-							</div>
-						</li>
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </li>
     `
 }
 
@@ -298,7 +327,6 @@ loadDataFromStorage();
 function searchBar() {
     //converts the value from searchbar to lowercase for case in-sensitive input
     const query = searchBarEl.value.toLowerCase();
-
 
     const filteredExpenses = allExpenses.filter(expense => 
         expense.desc.toLowerCase().includes(query) || //Converts the desc (description) of the expense to lowercase and checks if it contains the search query (query).
@@ -330,25 +358,22 @@ filterTransactionByType();
 
 function filterByDate() {
     const startDate = new Date(startDateInput.value);
-
     const endDate = new Date(endDateInput.value);
 
-    if(isNaN(startDate) || isNaN(endDate)) {
-        alert("Please enter valid date range.");
+    if (isNaN(startDate) || isNaN(endDate)) {
+        alert("Please enter a valid date range.");
         return;
     }
 
     const filteredTransactions = allTransactions.filter(transaction => {
         const transactionDate = transaction.moment;
-        return transactionDate >= startDate && transactionDate <= endDate
+        return transactionDate >= startDate && transactionDate <= endDate;
     });
 
-    renderList(filteredTransactions)
+    renderList(filteredTransactions);
 }
 
 filterDateBtn.addEventListener("click", filterByDate);
-filterByDate();
 
-loadDataFromStorage();
-
+// ...existing code...
 
